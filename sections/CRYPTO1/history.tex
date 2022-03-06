@@ -1,0 +1,46 @@
+\subsection{Storia}
+
+\begin{frame}
+    \frametitle{Storia}
+    \textbf{CRYPTO1} è uno stream cipher sviluppato da \textit{NXP~Semiconductors} nel 1994
+    insieme al livello di comunicazione di MIFARE Classic~\cite{tezcan2017brute}\pause
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Security through obscurity}
+    La sicurezza del sistema era affidata al concetto di \textit{Security through obscurity}
+
+    \begin{itemize}
+        \item <2-> Metodo fortemente sconsigliato da tutti gli organi normativi sulla sicurezza\cite{scarfone2008guide}
+        \item <3-> Tecnica in contrasto con \textit{Security by Design} e \textit{Open security}
+    \end{itemize}
+\end{frame}
+\note{
+    Contrariamente alle due politiche \textit{Security by Design} e \textit{Open security}
+    la sicurezza tramite offuscazione è fortemente sconsigliata, in quanto affida la sicurezza del sistema
+    al fatto che nessuno riesca a comprenderlo.
+
+    Questa pratica rende quindi il sistema vulnerabile a qualsiasi attacco di tipo reverse engeneering,
+    oltre che a possibili fughe di informazioni.
+
+    L'utilizzo di ideologie ``open'' permette la validazione del sistema da parte di un maggior numero di enti
+    e di membri di una comunità, permettendo così l'individuazione di falle in minor tempo.
+
+    Il metodo più efficiente, però, consiste sempre nell'utilizzo di sistemi già esistenti e ritenuti sicuri (p.e. tritium)
+}
+
+\begin{frame}
+    \frametitle{La caduta di CRYPTO1}
+    Nel 2008/2009 più ricercatori in contemporanea hanno trovato vulnerabilità e sono stati rilasciati attacchi sul crittosistema CRYPTO1
+    che ne hanno interamente distrutto la sicurezza.\cite{garcia2008dismantling}\cite{courtois2008algebraic}\cite{nohl2008reverse}\pause
+
+    Il sistema presenta falle nella sicurezza in più settori:
+
+    \begin{itemize}
+        \item <2-> Random Number Generator
+        \item <3-> Proprietà algebriche
+        \item <4-> Complessità delle chiavi (Che rendono il crittosistema vulnerabile a attacchi di tipo Bruteforce\cite{courtois2008algebraic})
+    \end{itemize}
+\end{frame}
+

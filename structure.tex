@@ -1,0 +1,67 @@
+\begin{frame}[plain]
+    \maketitle
+\end{frame}
+
+\section{Sommario}
+\begin{frame}[allowframebreaks]
+    \frametitle{Sommario}
+    \setbeamertemplate{section in toc}[sections numbered]
+    \tableofcontents
+\end{frame}
+\note{
+    %\begin{enumerate}
+    %X    \item Tag NFC e ISO14443
+    %    \begin{enumerate}
+    %X        \item UUID \textit{Questo sarà necessario perchè l'uuid appare come parametro di inizializzazione dello stream cipher}
+    %X        \item Struttura della memoria e processo di autenticazione per Mifare Classic
+    %    \end{enumerate}
+    %    \item Introduzione generale degli stream cipher
+    %    \item Algoritmo CRYPTO1
+    %    \begin{enumerate}
+    %        \item Confronto con uno stream cypher ideale e vulnerabilità
+    %        \item Vulnerabilità implementative
+    %        \begin{enumerate}
+    %X            \item valore del RNG del reader dipendente da numero di invocazioni
+    %X            \item valore del RNG del tag dipendente solamente dal tempo di accensione
+    %            \item LFSR state recovery
+    %            \item LFSR rollback
+    %        \end{enumerate}
+    %        \item Vulnerabilità concettuali dell'algoritmo
+    %        \begin{enumerate}
+    %X            \item Nonce a 32bit effettivamente funzione di un valore a 16 bit
+    %            \item La ``Filter function'' utilizza solo i bit dispari del LFSR
+    %            \item Parity bit attacks
+    %        \end{enumerate}
+    %        \item Attacchi
+    %        \begin{enumerate}
+    %            \item Genuine reader attacks
+    %            \item Genuine tag attack
+    %            \item Eavesdropping
+    %            \item https://github.com/DrSchottky/mfcuk
+    %        \end{enumerate}
+    %        \item Considerazioni per il miglioramento
+    %        \begin{enumerate}
+    %            \item Miglioramento del RNG
+    %            \item Ridefinizione della ``Filter function''
+    %            \item AES impl https://digital-library.theiet.org/content/journals/10.1049/ip-ifs\_20055006
+    %            \item Considerazioni relative alla fattibilità e all'aumento del costo per tag
+    %        \end{enumerate}
+    %        \item Successori
+    %        \begin{enumerate}
+    %            \item Mifare Desfire
+    %        \end{enumerate}
+    %    \end{enumerate}
+    %\end{enumerate}
+}
+
+\input{sections/ISO14443.tex}
+
+\input{sections/stream_ciphers.tex}
+
+\input{sections/crypto1.tex}
+
+\section{Bibliografia}
+\begin{frame}[allowframebreaks]
+    \frametitle{Bibliografia}
+    \bibliography{texmf/bibtex/bib/refs}
+\end{frame}

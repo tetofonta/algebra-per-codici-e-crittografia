@@ -1,0 +1,31 @@
+\documentclass[handout]{beamer}
+
+\input{settings.tex}
+\usepackage{pgfpages}
+\pgfpagesuselayout{2 on 1}[a4paper, border shrink=5mm]
+
+\setbeameroption{show notes on second screen=bottom}
+
+\newlength{\parskipbackup}
+\setlength{\parskipbackup}{\parskip}
+\newlength{\parindentbackup}
+\setlength{\parindentbackup}{\parindent}
+\newcommand{\baselinestretchbackup}{\baselinestretch}
+
+\usetemplatenote{\rmfamily \scriptsize%
+  \setlength{\parindent}{1em} \setlength{\parskip}{1ex}%
+  \renewcommand{\baselinestretch}{1}%
+  \noindent \insertnote%
+
+  \setlength{\parskip}{\parskipbackup}%
+  \setlength{\parindent}{\parindentbackup}%
+  \renewcommand{\baselinestretch}{\baselinestretchbackup}%
+}
+
+\AtBeginSection[]{
+    \stepcounter{page}
+}
+
+\begin{document}
+    \input{structure.tex}
+\end{document}

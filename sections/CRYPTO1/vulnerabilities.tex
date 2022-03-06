@@ -1,0 +1,45 @@
+\subsection{Vulnerabilità}
+
+\begin{frame}
+    Le vulnerabilità trovate negli anni nel crittosistema sono le seguenti.
+
+    Alcune di queste sono di facile soluzione perchè riguardano il lato hardware del lettore,
+    per cui, a fronte di un costo maggiore, è possibile migliorarne le capacità.
+\end{frame}
+
+\begin{frame}
+    \scriptsize
+    \begin{itemize}
+        \item <1-> Utilizzo di chiavi a 48 bit: Possibili attacchi BruteForce \cite{courtois2008algebraic}
+        \item <2-> RNG del tag non è crittograficamente sicuro. infatti è un LFSR con condizione iniziale costante.
+        \begin{itemize} \scriptsize
+            \item <3-> Consegue che lo stato è prevedibile e dipende dal tempo trascorso dal poweron~\cite{garcia2008dismantling}\cite{courtois2008algebraic}
+            \item <4-> Inoltre i numeri casuali sono generati a partire da 16 bit del registro 
+            \item <5-> in particolare i numeri sono generati ad ogni ciclo di clock del tag, quindi la precisione del attaccante deve limitarsi a quanti di 10 microsecondi (106kHz) e la sequenza di numeri i ripete ogni 65535 iterazioni (0.6s)
+        \end{itemize}
+        \item <6-> L'RNG dei lettori viene aggiornato solamente ad ogni nuova autenticazione~\cite{garcia2008dismantling}
+        \item <7-> La funzione di filtraggio del LFSR usa 20bit del registro e sono solo bit in posizione dispari
+        \item <8-> LFSR State Recovery
+        \item <9-> LFSR Rollback
+        \item <10-> i bit di parità sono computati sul plaintext e poi inviati non cifrati
+        \item <11-> nested authentication attacks
+    \end{itemize}
+\end{frame}
+
+
+\subsubsection{LFSR}
+\begin{frame}
+    \frametitle{Dettagli sul LFSR}
+    todo: 
+        reverse engeneering \cite{nohl2008reverse} del chip per trovare il circuito di autenticazione
+        attacchi per trovare la funzione \cite{garcia2008dismantling}
+        attacchi dati dai odd
+        nested auth e drschottky
+\end{frame}
+
+\subsubsection{Attacchi Algebrici}
+\begin{frame}
+    \frametitle{Attacchi Algebrici}
+
+\end{frame}
+
