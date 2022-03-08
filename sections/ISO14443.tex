@@ -160,10 +160,9 @@
     \begin{itemize}
         \item il tag sceglie il proprio nonce e lo invia al lettore
         \item entrambe le parti inizializzano il proprio cifrario con una funzione della chiave \(key\), \(n_t\) e l'uid del tag
-        \item una volta ottenuto il nonce, il lettore computa i primi 96 bit del keystream \(suc(n_t) = ks_1, suc^2(n_t), suc^3(n_t)\)
-        \item il lettore genera \(n_r\) e lo invia al tag cifrandolo con \(ks_1\)
-        \item il lettore quindi, dopo aver calcolato \(suc^2(n_t), suc^3(n_t)\) aggiorna il proprio cifrario con il valore \(n_r\), la cui nuova iterazione rappresenterà la seconda chiave, la quale verrà inviata cifrata con la seconda iterazione del cifrario inizializzato precedentemente a fini di verifica
-        \item il tag quindi genera le due chiavi necessarie per decifrare i dati, ottenendo così \(n_r\), utilizzato per aggiornare il proprio cifrario e conseguentemente per torvare \(ks_2\) che permetterà di verificare la correttezza di \(suc^2(n_t)\)
+        \item una volta ottenuto il nonce, il lettore computa i primi 32 bit del keystream
+        \item il lettore genera \(n_r\) e lo invia al tag cifrandolo con \(ks_1\) \(n_r \oplus ks_1\) insieme invia l'iterazione successiva \(a_r = suc^2(n_t)\)
+        \item il tag quindi, aggiorna il proprio cifrario con \(n_r\), quindi genera \(ks_2\) che permetterà di verificare la correttezza di \(suc^2(n_t)\)
         \item per completare l'autenticazione viene quindi inviato \(suc^3(n_t)\) cifrato con \(k_3\) in modo che Il lettore possa validare il tag.
     \end{itemize}
 }

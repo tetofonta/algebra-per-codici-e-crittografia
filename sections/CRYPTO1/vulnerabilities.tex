@@ -11,7 +11,7 @@
     \scriptsize
     \begin{itemize}
         \item <1-> Utilizzo di chiavi a 48 bit: Possibili attacchi BruteForce \cite{courtois2008algebraic}
-        \item <2-> RNG del tag non è crittograficamente sicuro. infatti è un LFSR con condizione iniziale costante.
+        \item <2-> RNG del tag non è crittograficamente sicuro. infatti è un LFSR (a 16 bit) con condizione iniziale costante.
         \begin{itemize} \scriptsize
             \item <3-> Consegue che lo stato è prevedibile e dipende dal tempo trascorso dal poweron~\cite{garcia2008dismantling}\cite{courtois2008algebraic}
             \item <4-> Inoltre i numeri casuali sono generati a partire da 16 bit del registro 
@@ -26,20 +26,35 @@
     \end{itemize}
 \end{frame}
 
-
-\subsubsection{LFSR}
 \begin{frame}
-    \frametitle{Dettagli sul LFSR}
-    todo: 
-        reverse engeneering \cite{nohl2008reverse} del chip per trovare il circuito di autenticazione
-        attacchi per trovare la funzione \cite{garcia2008dismantling}
-        attacchi dati dai odd
-        nested auth e drschottky
-\end{frame}
+    \frametitle{Bit di parità}
+    \label{sec:parity-enc}
+    Ulteriore vulnerabilità dell'implementazione sta nel fatto che il livello di trasmissione fisica richiede 
+    un invio di un bit di parità ogni 8 bit di dato \pause
 
-\subsubsection{Attacchi Algebrici}
+    IL BIT DI PARITÀ È QUINDI INVIATO CIFRATO \textbf{CONDIVIDENDO IL BIT DEL KEYSTREAM} MA VIENE \textbf{CALCOLATO SUL PLAINTEXT}\cite{Courtois2009TheDS}\pause
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{keystream-parity.png}
+        \caption{Assegnazione dei bit di cifratura tra dati e bit di parità}
+        \label{fig:keystream-parity}
+    \end{figure}
+\end{frame}
+\note{
+    Questo permette di avere informazioni sul keystream (almeno su un bit ogni 8) ed è una proprietà utilizzabile per ridurre lo spazio di ricerca negli attacchi Nested authentication (vedi slide~\ref{sec:nested-auth})
+}
+
 \begin{frame}
-    \frametitle{Attacchi Algebrici}
+    \frametitle{Errori di trasmissione}
+    \label{sec:parity-bit-vuln}
+    Secondo il protocollo ISO14443a ogni 8 bit di dati deve essere inviato un bit di parità.\pause
 
+    Il tag riceve una sequenza di dati con bit di parità invalidi $\implies$ Nessuna risposta da parte del tag\pause
+
+    Il tag riceve una sequenza con bit di parità corretti ma la verifica della risposta alla challenge non ha successo $\implies$ NACK\pause
+
+    {\large IL NACK È CIFRATO MA È UN TESTO CONOSCIUTO}
 \end{frame}
-
+\note{
+}

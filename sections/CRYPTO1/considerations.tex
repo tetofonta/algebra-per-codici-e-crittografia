@@ -1,1 +1,45 @@
 \subsection{Considerazioni}
+\begin{frame}
+    \frametitle{Considerazioni}
+    MIFARE Classic non rappresenta una piattaforma sicura per lo sviluppo di applicazioni contactless, e in
+    particolare è inadatto ad applicazioni relative a micropagamenti\pause
+
+    Durante la progettazione della tecnologia sono stati commessi gravi errori che, data la banalità di alcuni,
+    potrebbero essere stati inseriti con scopi malevoli~\cite{Courtois2009TheDS}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Miglioramenti - RNG}
+    La maggioranza degli attacchi utilizza la predicibilità del RNG. \pause
+    
+    La soluzione in questo caso è di utilizzare un TRNG disponibile in hardware, a costo di spazio su silicio e di costi pecuniari maggiorati.\pause
+
+    Un migliormento parziale potrebbe avvenire utilizzando un LFSR da 32 bit e non 16, aumentando così le possibili combinazioni al fine di rallentare gli attacchi.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Miglioramenti - LFSR}
+    Alcune vulnerabilità sono causate dalla funzione di filtraggio del LFSR (Slide~\ref{sec:filter-fn}).
+    A tal fine potrebbe essere vantaggiosa un'implementazione dove il cifrario venga sostituito da un modello crittograficamente sicuro.
+    
+    Una valida proposta potrebbe essere GRAIN-128, cifrario ideato sostanzialmente per ambienti e dispositivi a basso costo e bassissima area occupata\cite{hell2006stream}\pause
+\end{frame}
+\begin{frame}
+    \frametitle{Miglioramenti - LFSR}
+    Restano però alcune problematiche:
+    \begin{itemize}
+        \item <1-> Grain necessita di una chiave di 128bit\newline
+                A tal fine è possibile caricare un vaore randomico a seguire della chiave nel cifrario per garantire più entropia dei processi di autenticazione.
+        \item <2-> Alternativamente sarbbe necessario aumentare la lunghezza della chiave. Per fare ciò sarebbe poi necessario modificare la struttura di memoria oppure ridurre lo spazio consentito ai dati del tag.
+    \end{itemize}
+\end{frame}
+\note{
+    In ogni caso la lunghezza della chiave di 48 bit è da considerarsi non siura e la tecnologia come tale.
+}
+
+\begin{frame}
+    \frametitle{Miglioramenti - ALGORITMO}
+    Una soluzione più drastica è rappresentata dal cambio del circuito di cifratura, passando a un'implementazione AES a basso costo.\cite{feldhofer2005aes}
+
+    In questo caso resta la problematica della gestione di chiavi a 128 bit.
+\end{frame}
