@@ -22,7 +22,7 @@
     Il circuito si presenta come segue:
     \begin{figure}
         \centering
-        \includegraphics[width=0.4\textwidth]{authLogic.png}
+        \includegraphics[width=0.3\textwidth]{authLogic.png}
         \caption{Circuito logico ricavato dal reverse engeneering del tag}
         \label{fig:reverse-engeneering-circuit}
     \end{figure}
@@ -64,7 +64,7 @@
     \[push(value, s) = next(value_i, s) \forall i \in [0, bits(value))\]
 
     \pause
-    Indichiamo \(suc^n(seed)\) la funzione che ottiene i 32 bit della n-esima operazione di shifting~\cite{secRFIDMutualAuth}
+    Indichiamo \(suc^n(seed)\) la funzione che ottiene i successivi 32 bit dal RNG~\cite{secRFIDMutualAuth}
 
     \pause
     Definiamo infine \(ks(s)\) la funzione che ritorna la chiave corrispondente allo stato s
@@ -109,7 +109,7 @@
         \column{0.5\textwidth}
             \(n_r = recv() \oplus ks(s)\)\\\pause
             \(s = push(n_r, s)\)\\\pause
-            \(assert(suc^2(n_t) == recv() \oplus ks(s))\)\pause
+            \(assert(suc^2(n_t) == recv() \oplus ks(s))\)\\\pause
             \(s = push(n_r, s)\)\\\pause
             \(send(suc^3(n_t) \oplus ks(s))\)\pause
         \column{0.5\textwidth}

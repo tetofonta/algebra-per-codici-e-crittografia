@@ -1,8 +1,10 @@
-\documentclass[handout]{beamer}
+\documentclass[handout, aspectratio=169]{beamer}
 
 \input{settings.tex}
 \usepackage{pgfpages}
-\pgfpagesuselayout{2 on 1}[a4paper, border shrink=5mm]
+\hypersetup{hidelinks}
+
+\pgfpagesuselayout{2 on 1}[a4paper, border shrink=8mm]
 
 \setbeameroption{show notes on second screen=bottom}
 
@@ -12,7 +14,7 @@
 \setlength{\parindentbackup}{\parindent}
 \newcommand{\baselinestretchbackup}{\baselinestretch}
 
-\usetemplatenote{\rmfamily \scriptsize%
+\usetemplatenote{\rmfamily%
   \setlength{\parindent}{1em} \setlength{\parskip}{1ex}%
   \renewcommand{\baselinestretch}{1}%
   \noindent \insertnote%
@@ -22,10 +24,12 @@
   \renewcommand{\baselinestretch}{\baselinestretchbackup}%
 }
 
+\pgfpageslogicalpageoptions{1}{border code=\pgfusepath{stroke}}
+
 \AtBeginSection[]{
     \stepcounter{page}
 }
 
 \begin{document}
-    \input{structure.tex}
+  \input{structure.tex}
 \end{document}

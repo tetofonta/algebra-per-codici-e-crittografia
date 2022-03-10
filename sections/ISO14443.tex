@@ -16,15 +16,15 @@
 \end{frame}
 \note{
     La codifica dell'informazione avviene con una variante di  manchester encoding\cite{instruments2014iso}
-
-    Si veda nella prossima slide l'immagine della traccia
+    
+    Uno dei principali vantaggi della tecnologia è che il tag può essere completamente passivo e alimentarsi grazie al campo magnetico generato dal tag, il quale causa induzione magnetica nella bobina del dispositivo.
 }
 
 \begin{frame}
     \begin{figure}
         \centering
-        \includegraphics[width=0.95\textwidth]{ISO14443a_COM.png}\cite{instruments2014iso}
-        \caption{Traccia della comunicazione tra dispositivo e lettore}
+        \includegraphics[width=0.85\textwidth]{ISO14443a_COM.png}
+        \caption{Traccia della comunicazione tra dispositivo e lettore~\cite{instruments2014iso}}
         \label{fig:iso14443a-trace}
     \end{figure}
     Si noti come la frequenza della portante sia notevolmente elevata\pause
@@ -49,13 +49,22 @@
     \frametitle{UUID e identificazione multipla di TAG}
     \begin{itemize}
         \item<1-> L'UUID è un codice di identificazione univoco che permette l'identificazione dei tag.
-        Un generico tag ISO14443-compilant possiede un UUID di 10byte, ma varie implementazioni permettono di ridurre
-        la lunghezza fino a un UUID minimo di 4byte.\cite{nxpmifareuidhandling}
+        Un generico tag ISO14443-compilant possiede un UUID di 10byte, ma varie implementazioni permettono di avere una lunghezza a partire da 4byte.\cite{nxpmifareuidhandling}
         \item<2-> Mediante il ciclo di identificazione e anticollisione è possibile ottenere la lista di tutti i tag presenti nelle vicinanze del lettore.
         \item<3-> Sarà poi possibile inviare comandi specifici a un solo tag mendiante il processo di selezione
     \end{itemize}
 \end{frame}
-\note{}
+\note{
+    Secondo lo standard, durante il processo di discover (Denominato ``anticollision loop'') è possibile dostinguere i tag grazie ai loro id.
+
+    È interessante notare, leggendo~\cite{nxpmifareev1datasheet}, che sono possibili più iterazioni del ciclo di anticollisione (CL1, CL2, CL3) dove ogni esecuzione incrementa il numero di byte che definiscono l'UUID.
+
+    Risulta quindi che per una carta implementante tutti e tre i livelli di anticollisione l'UUID sarà \textbf{univoco} e lungo 80 bit; mentre per le carte con soli due livelli l'UUID sarà di 56 bit ma pur sempre \textbf{univoco}.
+    L'unica implementazione dove il valore \textbf{non è garantito che sia univoco} è quella base da 32 bit.
+
+    Il protocollo poi prosegue con un paradigma ``select and operate'',
+    dove una sessione di comunicazione viene iniziata tramite l'UUID inviato dal lettore. A questo punto tutti i tag nella zona attiva rimarranno in stato IDLE ad eccezione del tag che è stato interpellato.
+}
 
 \subsection{Tag MIFARE Classic}
 \subsubsection{Struttura della memoria}
@@ -68,11 +77,33 @@
 
     \begin{figure}
         \centering
-        \includegraphics[width=0.45\textwidth]{MIFARE-EV1-INTERNAL_STRUCTURE.png}\cite{nxpmifareev1datasheet}
+        \includegraphics[width=0.3\textwidth]{MIFARE-EV1-INTERNAL_STRUCTURE.png}\cite{nxpmifareev1datasheet}
         \caption{Diagramma dei componenti interni a un chip MIFARE Classic}
         \label{fig:internal-mifare-block-diagram}
     \end{figure}
 \end{frame}
+\note{
+    \footnotesize
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            La struttura di un tag MIFARE CLASSIC è da ritenersi interessante.
+    
+            Data il ridotto costo del dispositivo ne consegue una bassa complessità elettronica.
+            Infatti esso è composto per una buona parte di componenti standard atti alla gestione della comunicazione e del chip in sè: L'interfaccia radio e il regolatore di tensione infatti sono gli unici componenti analogici presenti sul silicio.
+
+            Successivamente si ha l'unità logica che ha il compito di gestira la comunicazione e vigilare sulle operazioni, ma quest'ultima non ha grande compessità. L'algoritomo utilizzato è di fatto molto contenuto ed è equivalente a una macchina a stati.
+
+            È interessante notare come la gestione della memoria, in seguito descritta, sia ottimizzata al fine di ridurre i costi.
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=.6\textwidth]{algo_mifare.png}
+                \caption{Schema a blocchi della gestione logica di una transazione}
+            \end{figure}
+        \end{column}
+    \end{columns}
+}
 
 \begin{frame}
     La memoria è divisa in \textbf{settori} e \textbf{blocchi}:
@@ -84,6 +115,15 @@
         \item <4-> I blocchi \texttt{x:3} contengono le chiavi di scrittura e lettura (\textit{KeyA} e \textit{KeyB}), oltre che gli indicatori di protezione (access bits)
     \end{itemize}
 \end{frame}
+\note{
+    È molto interessante notare come, al fine di mantenere bassi i costi di fabbricazione, le memorie sono le responsabili per i costi (e lo spazio su silicio) più elevati.
+
+    Di conseguenza all'interno dei tag la memoria stessa viene utilizzata per il salvataggio delle chiavi di accesso e delle condizioni.
+
+    È inoltre interessante notare come esistano due diverse chiavi di cifratura per ogni settore: questo è fatto al fine di permettere l'utilizzo diversificato del tag a fronte di un segreto condiviso diverso. Molte volte la chiave A è utilizzata per permettere la sola lettura dei blocchi (escluso quello contenente la chiave B), mentre la chiave B è una chiave master in grado di riprogrammare il tag.
+
+    Bisogna però citare \cite{Courtois2009TheDS}, dove l'autore sottolinea come l'implementazione dell'algoritmo sia una ``waste of silicon'' data la caratteristica dell'offuscamento, dove funzioni identità sono implementate in modi diversi sul die. Questo, moltiplicato per il numero di tag prodotti un vero e proprio spreco di materiale.
+}
 
 \subsubsection{Lettura e scrittura}
 \begin{frame}
@@ -94,14 +134,15 @@
     e sfrutta un cifrario a flusso
 \end{frame}
 \note{
-    Il cifrario a flusso utilizzerà uno stream di dati denominato \(ks_n\) dove n sarà l'n-esima iterazione
+    Durante questa procedura il cifrario viene inizializzato in uno stato comune al fine di permettere una trasmissione riservata.
+    Lo stato condiviso sfrutta la presenza di nonce casuali per assicurare l'unicità della comunicazione in modo da impedire correlzioni e attacchi replica.
 }
 
 \subsubsection{Three pass authentication sequence}
 \begin{frame}
     \frametitle{Three pass authentication sequence\cite{garcia2008dismantling}}
     {
-        \scriptsize
+        \small
         \begin{columns}[onlytextwidth,T]
             \column{\dimexpr\textwidth-40mm-2mm}
                 \begin{itemize}
@@ -124,10 +165,14 @@
     }
 \end{frame}
 \note{
-    sarà possibile evidenziare una vulnerabilità nella generazione di numeri casuali, dipendenti solo dal power on time
+    Come è possibile vedere dallo schema, il processo di autenticazione inizia con il tag che invia un proprio nonce $n_t$ al lettore, in modo da - idealmente - impedire il riutilizzo di uno stato interno.
+    Infatti il nonce è utilizzato in concomitanza con l'uid e la chiave del settore per inizializzare il cifrario.
 
-    mentre in alcuni tag lo stato del rng è aggiornato solo alla fine di un'autenticazione. ciò comporta che la sequenza di nonce
-    del lettore è sempre la stessa
+    Infatti senza uuid e senza nonce, due tag con chiave uguale potrebbero essere scoperti solamente ascoltando (Eavesdropping) le comunicazioni.
+    Inserend l'uuid nell'algoritmo ciò diviene impossibile perchè i tag avranno uno stato diverso in funzione dell'uuid che è unico (o comunque è improbabile che due tag abbiano lo stessu uuid)
+    Ciò non ferma però eventuali attacchi che fanno leva sulla ripetizione degli stati iniziali del tag.
+
+    A tal fine viene introdotto il numero casuale deciso dal tag: la sua trasmissione in chiaro non è direttamente un vettore di attacco, ma si vedrà che è stato il metodo utilizzato per scoprire svariate vulnerabilità sull'rng.
 }
 
 \begin{frame}[allowframebreaks]
@@ -152,17 +197,18 @@
     
     Risposta finale
     \[send(suc^3(n_t) \oplus ks_3)\]
+
 \end{frame}
 \note{
-    Sia la funzione \(suc(v)\) la successiva iterazione del cifrario di flusso inizializzato cin valore \(v\) 
+    Sia la funzione \(suc(v)\) la successiva iterazione del rng con seed \(v\) 
     
-    Il processo di scambio di chiavi viene così descritto:
+    Il processo di scambio di chiavi viene così descritto:~\cite{nxpmifareev1datasheet}
     \begin{itemize}
-        \item il tag sceglie il proprio nonce e lo invia al lettore
+        \item il tag sceglie il proprio nonce $n_t$ e lo invia al lettore
         \item entrambe le parti inizializzano il proprio cifrario con una funzione della chiave \(key\), \(n_t\) e l'uid del tag
-        \item una volta ottenuto il nonce, il lettore computa i primi 32 bit del keystream
-        \item il lettore genera \(n_r\) e lo invia al tag cifrandolo con \(ks_1\) \(n_r \oplus ks_1\) insieme invia l'iterazione successiva \(a_r = suc^2(n_t)\)
-        \item il tag quindi, aggiorna il proprio cifrario con \(n_r\), quindi genera \(ks_2\) che permetterà di verificare la correttezza di \(suc^2(n_t)\)
+        \item una volta ottenuto il nonce, il lettore computa i primi 32 bit del keystream, inserendo nel LFSR i 32 bit di una funzione $f(n_t, uuid)$
+        \item il lettore genera \(n_r\) e lo invia al tag cifrandolo con \(ks_1\) (\(n_r \oplus ks_1\)) insieme invia la risposta alla challege \(a_r = suc^2(n_t)\) cifrata con i secondi 32 bit ottenuti aggiornando il proprio cifrario con $n_r$
+        \item il tag quindi, aggiorna il proprio cifrario con \(n_r\) e verifica che $a_r$ sia valida.
         \item per completare l'autenticazione viene quindi inviato \(suc^3(n_t)\) cifrato con \(k_3\) in modo che Il lettore possa validare il tag.
     \end{itemize}
 }

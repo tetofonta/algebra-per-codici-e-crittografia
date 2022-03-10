@@ -3,7 +3,7 @@
 \begin{frame}
     \frametitle{Storia}
     \textbf{CRYPTO1} è uno stream cipher sviluppato da \textit{NXP~Semiconductors} nel 1994
-    insieme al livello di comunicazione di MIFARE Classic~\cite{tezcan2017brute}\pause
+    insieme alla famiglia di tag MIFARE Classic~\cite{tezcan2017brute}
 \end{frame}
 
 
@@ -39,8 +39,11 @@
 
     \begin{itemize}
         \item <2-> Random Number Generator
-        \item <3-> Proprietà algebriche
-        \item <4-> Complessità delle chiavi (Che rendono il crittosistema vulnerabile a attacchi di tipo Bruteforce\cite{courtois2008algebraic})
+        \item <3-> Proprietà algebriche e vulnerabilità strutturali del LFSR
+        \item <4-> Complessità delle chiavi (Che rendono il crittosistema vulnerabile a attacchi di tipo Bruteforce~\cite{courtois2008algebraic})
+        \item <5-> Logica di gestione della comunicazione
     \end{itemize}
+
+    (Praticamente presenta falle in ogni sua componente)
 \end{frame}
 

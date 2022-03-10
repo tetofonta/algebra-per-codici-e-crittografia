@@ -49,28 +49,46 @@
 
     Ottenendo il NACK cifrato è possibile ottenere 4 bit di keystream.\pause
 
-    \textit{Fissando un nonce $n_t$ e un prefisso di 24 bit sulla risposta alla challenge $a_t$ che ha dato un NACK, esiste una probabilità di 1/12.8 che il keystream non dipenda dal quarto byte decifrato.}\cite{Courtois2009TheDS}
+    Per fare ciò viene inviata una sequenza di otto byte $\bar{c}$ (la quale dovrebbe contenere $n_r$ e $a_r$) con i parity bit casuali.\pause
+
+    Inviando un massimo di 256 query è possibile trovare la combinazione dei bit di parità tale per cui siano corretti.\pause
+
+    \textit{È possibile notare che la probabilità che gli ultimi 3 bit del keystream derivato dalla decodifica degli ultimi tre bit di $c_3$ non dipendano da quest'ultimo; e la probabilità è di 0.75 }\cite{Courtois2009TheDS}
 \end{frame}
+\note{
+    todo capirci meglio
+}
 
 \begin{frame}
     \frametitle{Genuine Tag Attack}
-    A questo punto è possibile sfruttare il fatto che l'RNG sia predicibile in funzione del Power On Time:
-    Mantenendo $n_t$ costante insieme ai primi 24 bit della risposta ritentiamo l'autenticazione per 256 volte 
-    (variando quindi il quarto byte della risposta) ottenendo così circa 8 risposte da parte del tag.\pause
+    Ogni bit futuro dello stato del LFSR è dato da una combinazione lineare nota di alcuni bit dello stato attuale.
 
-    A queso punto è dimostrabile che, assumendo che il keystream non dipenda dalla decifratura del quarto byte (P = 1/12.8), allora
-    la differenza degli stati dipende da una funzione della differenza di c3\cite{Courtois2009TheDS}\pause
+    Parte di questi è $UID \oplus n_t$ e sono noti. L'altra parte è $n_r$ il quale è sconosciuto.\pause
+    
+    Per fare ciò è possibile sfruttare la vulnerabilità dell'RNG per avere sempre lo stesso nonce $n_t$.
 
-    Con queste risposte è possibile clcolare la differenza dello stato per tutti i tentativi
+    Mantenendo $n_t$ costante insieme ai primi 29 bit della risposta ritentiamo l'autenticazione per le 8 volte 
+    (variando quindii tre bit della risposta), variando anche i bit di parità. Dopo aver provato i $2^5$ casi otterremo una risposta 1/32 volte. \pause
+
+    Ripetendo questo processo possiamo così ottenere 8 risposte con i successivi 8 valori di $n_r$.
 \end{frame}
+\note{
+    todo capirci meglio
+}
 
 \begin{frame}
     \frametitle{Genuine Tag Attack}
-    A questo punto è necessario individuare i 21 bit dello stato che determineranno i bit a seguire, dove per ogni risposta del tag
-    potremo dividere la dimensione dello spazio di ricerca di 4.\pause
+    È ora possibile calcolare la differenza negli stati nelle 8 risposte, confrontandola con valori precomputati. otteniamo così i bit dispari dello stato \pause
 
-    Seppur un attacco complesso e basato su proprietà sttistiche, è possibile ottenere la chiave di autenticazione a un settore in circa 4000 query (30 minuti)\pause
+    Ripetendo l'operazione possiamo recuperare i bit pari e effettuare un RollBack del LFSR per ottenere la chiave
+\end{frame}
+\note{
+    todo capirci meglio
+}
 
+
+\begin{frame}
+    \frametitle{Genuine Tag Attack}
     È possibile trovare una implementazione qui: \href{https://github.com/DrSchottky/mfcuk/blob/master/src/mfcuk.c\#L623}{https://github.com/DrSchottky/mfcuk/}
 \end{frame}
 
