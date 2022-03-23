@@ -4,7 +4,7 @@
     \frametitle{LFSR Recovery (Genuine Reader Attack)}
     Data la dimensione ridotta del LFSR è possibile creare una tabella contenente le coppie ($LFSR_{value}$, $KeyStream$) per tutti gli stati da \texttt{0x000000000000} a \texttt{0x000FFFFFFFFF} ($2^{36}$ righe)\pause
 
-    Successivamente si effettua un tentativo di autenticazione simulando un tag, inviando all'inizio dela trasmissione un nonce $n_t$ nella forma \texttt{0x0000XXX0} (4096 tentativi) senza procedere oltre al primo passaggio\pause
+    Successivamente si effettua un tentativo di autenticazione simulando un tag, inviando all'inizio della trasmissione un nonce $n_t$ nella forma \texttt{0x0000XXX0} (4096 tentativi) senza procedere oltre al primo passaggio\pause
     
     Questo causa l'invio di un comando di halt da parte del lettore (comando noto) cifrato con lo stato attuale dal quale possiamo ricavare $ks_3$ e $ks_2$ dalla risposta $suc^2(n_t)$
 \end{frame}
@@ -16,7 +16,7 @@
     \frametitle{LFSR Recovery (Genuine Reader Attack)}
     Data la struttura è stato notato come esista un valore di $n_t$ tale per cui lo stato del LFSR equivale a \[\texttt{0xYYYYYYYY000Y}\]\pause
 
-    Il lettore quindi aggiorna il cifrario con il valore di $n_r$, che causa gli zeri nel LFSR di raggiungere lo stato \[\texttt{0x000YZZZZZZZZ}\]\pause
+    Il lettore quindi aggiorna il cifrario con il valore di $n_r$, fa sì che gli zeri nel LFSR raggiungano lo stato \[\texttt{0x000YZZZZZZZZ}\]\pause
 
     Possiamo quindi trovare lo stato del LFSR dalla tabella cercando per i valori di $ks_2$ e $ks_3$
 \end{frame}
@@ -29,7 +29,7 @@
     Una volta ottenuto lo stato del LFSR dopo l'inserzione del nonce $n_r$ non è ancora possibile effettuare il rollback perchè $n_r$ è cifrato.
     \pause
     
-    La vulnerabilità viene utilizzata ora: Dato che l'MSB del LFSR non è input della funzione di filtro $f$ (Vedi figura~\ref{fig:crypto1})
+    La vulnerabilità viene utilizzata ora: dato che l'MSB del LFSR non è input della funzione di filtro $f$ (Vedi figura~\ref{fig:crypto1})
     è possibile sostituirlo con un valore $r$ senza effetti collaterali.
     \pause
     
@@ -44,20 +44,16 @@
 \subsubsection{Genuine Tag}
 \begin{frame}
     \frametitle{Genuine Tag Attack}
-    Sfruttando la vulnerabità relativa al leak di informazioni all'invio di un NACK~\ref{sec:parity-bit-vuln} è possibile utilizzarla al fine di ottenere 
-    la chiave utilizzata dal tag.\pause
+    Sfruttando la vulnerabilità relativa al leak di informazioni all'invio di un NACK~(slide~\ref{sec:parity-bit-vuln}) è possibile ottenere la chiave utilizzata dal tag.\pause
 
-    Ottenendo il NACK cifrato è possibile ottenere 4 bit di keystream.\pause
+    Ottenendo il NACK cifrato è possibile ricavare 4 bit di keystream.\pause
 
     Per fare ciò viene inviata una sequenza di otto byte $\bar{c}$ (la quale dovrebbe contenere $n_r$ e $a_r$) con i parity bit casuali.\pause
 
     Inviando un massimo di 256 query è possibile trovare la combinazione dei bit di parità tale per cui siano corretti.\pause
 
-    \textit{È possibile notare che la probabilità che gli ultimi 3 bit del keystream derivato dalla decodifica degli ultimi tre bit di $c_3$ non dipendano da quest'ultimo; e la probabilità è di 0.75 }\cite{Courtois2009TheDS}
+    \textit{È possibile notare che la probabilità che gli ultimi 3 bit del keystream derivato dalla decodifica degli ultimi tre bit di $c_3$ non dipendano da quest'ultimo; e tale probabilità è di 0.75 }\cite{Courtois2009TheDS}
 \end{frame}
-\note{
-    todo capirci meglio
-}
 
 \begin{frame}
     \frametitle{Genuine Tag Attack}
@@ -68,28 +64,21 @@
     Per fare ciò è possibile sfruttare la vulnerabilità dell'RNG per avere sempre lo stesso nonce $n_t$.
 
     Mantenendo $n_t$ costante insieme ai primi 29 bit della risposta ritentiamo l'autenticazione per le 8 volte 
-    (variando quindii tre bit della risposta), variando anche i bit di parità. Dopo aver provato i $2^5$ casi otterremo una risposta 1/32 volte. \pause
+    (variando quindi tre bit della risposta), variando anche i bit di parità. Dopo aver provato i $2^5$ casi otterremo una risposta 1/32 volte. \pause
 
     Ripetendo questo processo possiamo così ottenere 8 risposte con i successivi 8 valori di $n_r$.
 \end{frame}
-\note{
-    todo capirci meglio
-}
 
 \begin{frame}
     \frametitle{Genuine Tag Attack}
-    È ora possibile calcolare la differenza negli stati nelle 8 risposte, confrontandola con valori precomputati. otteniamo così i bit dispari dello stato \pause
+    È ora possibile calcolare la differenza negli stati nelle 8 risposte, confrontandola con valori precomputati. Otteniamo così i bit dispari dello stato \pause
 
-    Ripetendo l'operazione possiamo recuperare i bit pari e effettuare un RollBack del LFSR per ottenere la chiave
+    Ripetendo l'operazione possiamo recuperare i bit pari ed effettuare un RollBack del LFSR per ottenere la chiave
 \end{frame}
-\note{
-    todo capirci meglio
-}
-
 
 \begin{frame}
     \frametitle{Genuine Tag Attack}
-    È possibile trovare una implementazione qui: \href{https://github.com/DrSchottky/mfcuk/blob/master/src/mfcuk.c\#L623}{https://github.com/DrSchottky/mfcuk/}
+    È possibile trovare un'implementazione qui: \href{https://github.com/DrSchottky/mfcuk/blob/master/src/mfcuk.c\#L623}{https://github.com/DrSchottky/mfcuk/}
 \end{frame}
 
 \subsubsection{Nested Authentication}
@@ -141,5 +130,5 @@
     portando così i nonce candidati a 64.
 \end{frame}
 \note{
-    addizionalmente è possibile prevedere il valore del nonce data la bassa entropia del rng e la sua predicibilità
+    Addizionalmente è possibile prevedere il valore del nonce data la bassa entropia del rng e la sua predicibilità
 }
